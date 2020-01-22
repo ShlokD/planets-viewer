@@ -6,11 +6,13 @@ export const InputField = ({ id, labelText, type, value, onInput }) => {
   };
 
   return (
-    <div className="flex flex-column items-center pt3">
-      <label htmlFor={id} className="mr4 text-center">
-        {labelText}
-      </label>
-      <input onInput={setValue} id={id} type={type} value={value}></input>
-    </div>
+    <input
+      className="br-pill pa2 mt2"
+      placeholder={labelText}
+      onInput={setValue}
+      id={id}
+      type={type}
+      value={value}
+    ></input>
   );
 };

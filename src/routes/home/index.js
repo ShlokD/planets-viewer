@@ -4,21 +4,24 @@ import { planets } from "./data";
 
 const toTitleCase = str =>
   `${str[0].toUpperCase()}${str.substring(1, str.length)}`;
+
 const PlanetList = ({ planets }) => {
   const headings = Object.keys(planets[0]).filter(key => key !== "description");
   return (
-    <table>
+    <table className="center">
       <thead>
         <tr>
           {headings.map(heading => (
-            <th className="f4 pa3">{toTitleCase(heading)}</th>
+            <th className="f4 pa3 light-blue b--light-blue bw2 bg-navy center">
+              {toTitleCase(heading)}
+            </th>
           ))}
         </tr>
       </thead>
       <tbody>
         {planets.map(({ ordinality, name, size, distance }) => {
           return (
-            <tr className="f2">
+            <tr className="f3">
               <td className="pa3">{ordinality}</td>
               <td className="pa3">
                 <a
@@ -82,7 +85,7 @@ class PlanetInput extends Component {
 
   render() {
     return (
-      <div className="mt4">
+      <div className="flex flex-column items-center justify-center mt4">
         <InputField
           id="name"
           labelText="Name"
@@ -111,19 +114,20 @@ class PlanetInput extends Component {
           value={this.state.ordinality}
           onInput={val => this.setState({ ordinality: Number(val) })}
         />
-        <div className="flex flex-column">
-          <label className="mt2" htmlFor="description">
-            Description
-          </label>
-          <textarea
-            id="description"
-            rows={4}
-            cols={50}
-            value={this.state.description}
-            onInput={ev => this.setState({ description: ev.target.value })}
-          ></textarea>
-        </div>
-        <button onClick={this.onSubmit} className="pa2 mt2">
+
+        <textarea
+          id="description"
+          placeholder="Enter description..."
+          className="mt3 pa2"
+          rows={4}
+          cols={50}
+          value={this.state.description}
+          onInput={ev => this.setState({ description: ev.target.value })}
+        ></textarea>
+        <button
+          className="pv2 ph4 mt2 bg-navy light-blue br-pill shadow3 fw4"
+          onClick={this.onSubmit}
+        >
           Submit
         </button>
       </div>
@@ -137,6 +141,15 @@ const savePlanetsToLocalStorage = planets => {
   }
 };
 
+const getPlanets = () => {
+  if (localStorage) {
+    const planets = JSON.parse(localStorage.getItem("planets"));
+    return planets || [];
+  }
+
+  return [];
+};
+
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -145,6 +158,15 @@ class Home extends Component {
     };
 
     this.addPlanet = this.addPlanet.bind(this);
+  }
+
+  componentDidMount() {
+    const savedPlanets = getPlanets();
+    if (savedPlanets.length > 0) {
+      this.setState({
+        planets: savedPlanets
+      });
+    }
   }
 
   addPlanet(planet) {
