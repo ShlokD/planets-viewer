@@ -1,9 +1,45 @@
 import { h, Component } from "preact";
-import { InputField } from "../../components/";
 import { planets } from "./data";
 
-const toTitleCase = str =>
-  `${str[0].toUpperCase()}${str.substring(1, str.length)}`;
+export const toTitleCase = str =>
+  `${str[0].toUpperCase()}${str.substring(1, str.length).toLowerCase()}`;
+
+export const isValidInput = enteredValue => {
+  if(typeof enteredValue === "string") return enteredValue.length !== 0;
+  return enteredValue !== undefined && enteredValue !== null
+}
+
+const savePlanetsToLocalStorage = planets => {
+  if (localStorage) {
+    localStorage.setItem("planets", JSON.stringify(planets));
+  }
+};
+
+const getPlanets = () => {
+  if (localStorage) {
+    const planets = JSON.parse(localStorage.getItem("planets"));
+    return planets || [];
+  }
+
+  return [];
+};
+
+export const InputField = ({ id, labelText, type, value, onInput }) => {
+  const setValue = ev => {
+    onInput(ev.target.value);
+  };
+
+  return (
+    <input
+      className="br-pill pa2 mt2"
+      placeholder={labelText}
+      onInput={setValue}
+      id={id}
+      type={type}
+      value={value}
+    ></input>
+  );
+};
 
 const PlanetList = ({ planets }) => {
   const headings = Object.keys(planets[0]).filter(key => key !== "description");
@@ -41,7 +77,6 @@ const PlanetList = ({ planets }) => {
   );
 };
 
-const validateInput = enteredValue => !!enteredValue;
 
 class PlanetInput extends Component {
   constructor(props) {
@@ -60,10 +95,10 @@ class PlanetInput extends Component {
   onSubmit() {
     const { name, size, distance, ordinality, description } = this.state;
     if (
-      validateInput(name) &&
-      validateInput(size) &&
-      validateInput(distance) &&
-      validateInput(ordinality)
+      isValidInput(name) &&
+      isValidInput(size) &&
+      isValidInput(distance) &&
+      isValidInput(ordinality)
     ) {
       this.props.onSubmitInput({
         ordinality,
@@ -134,21 +169,6 @@ class PlanetInput extends Component {
     );
   }
 }
-
-const savePlanetsToLocalStorage = planets => {
-  if (localStorage) {
-    localStorage.setItem("planets", JSON.stringify(planets));
-  }
-};
-
-const getPlanets = () => {
-  if (localStorage) {
-    const planets = JSON.parse(localStorage.getItem("planets"));
-    return planets || [];
-  }
-
-  return [];
-};
 
 class Home extends Component {
   constructor(props) {
